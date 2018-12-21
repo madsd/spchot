@@ -1,0 +1,39 @@
+Add-PSSnapin Microsoft.SharePoint.PowerShell -ErrorAction SilentlyContinue
+
+$hostHeader = "scenario02.contoso.com"
+$webAppUrl = "http://" + $hostHeader
+$siteUrl = $webAppUrl
+$solutionPackageName = "DashboardDemo.wsp"
+
+$path = Split-Path $MyInvocation.MyCommand.Path | Get-Item
+$solutionPath = $path.FullName + "\" + $solutionPackageName
+Add-SPSolution -LiteralPath $solutionPath | Out-Null
+Install-SPSolution -Identity $solutionPackageName -GACDeployment -WebApplication $webAppUrl | Out-Null
+
+$deployed = Get-SPSolution -Identity $solutionPackageName | SELECT Deployed
+
+while (!$deployed.Deployed)
+{
+    $deployed = Get-SPSolution -Identity $solutionPackageName | SELECT Deployed
+    Write-Host "." -NoNewline
+    Start-Sleep -Seconds 2
+}
+Write-Host
+
+Enable-SPFeature -Identity "DashboardShowOff" -Url $siteUrl | Out-Null
+
+Add-Type -Path "C:\Windows\assembly\GAC_MSIL\Scenario\1.0.0.0__dac3e400867bb9b7\Scenario.dll"
+
+$site = Get-SPSite $SiteUrl
+$web = $site.RootWeb
+$pubWeb = [Microsoft.SharePoint.Publishing.PublishingWeb]::GetPublishingWeb($web);
+$startPage = $pubWeb.DefaultPage;
+$startPage.CheckOut();
+$webPartManager = $startPage.GetLimitedWebPartManager([System.Web.UI.WebControls.WebParts.PersonalizationScope]::Shared)
+
+$zoneName = "TopColumnZone"
+$webPart = New-Object Scenario.DashboardShowOff.DashboardShowOff
+$webPart.Title = "Developer Dashboard ShowOff";
+$webPartManager.AddWebPart($webPart, $zoneName, 0);
+$startPage.CheckIn("", [Microsoft.SharePoint.SPCheckInType]::MajorCheckIn);     
+$startPage.Publish("");

@@ -1,0 +1,7 @@
+The files that you would package and distribute to the customers would be:
+
+Lab Manuals
+Lab Setup/Scripts
+Lab Setup/Tools
+PowerPoints
+Samples and Walkthroughs

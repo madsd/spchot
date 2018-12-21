@@ -1,0 +1,17 @@
+Latest tools refresh: 28-10-2014
+
+Log Parser 2.2: http://www.microsoft.com/en-us/download/details.aspx?id=24659
+Log Parser Studio 2.0: https://gallery.technet.microsoft.com/Log-Parser-Studio-cd458765
+Log Parser Lizard 4.0: http://www.lizard-labs.net/log_parser_lizard.aspx
+
+ULS Viewer: http://www.microsoft.com/en-us/download/details.aspx?id=44020
+
+Disassemblers:
+ILSpy: http://ilspy.net/
+Telerik JustDecompile: http://www.telerik.com/products/decompiler.aspx
+Jetbrains dotPeak: https://www.jetbrains.com/decompiler/
+
+Process Monitor: http://technet.microsoft.com/en-us/sysinternals/bb896645.aspx
+Process Explorer: http://technet.microsoft.com/en-us/sysinternals/bb896653.aspx
+
+Snap: http://toddcarter.net/public/snap-latest.zip

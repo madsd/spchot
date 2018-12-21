@@ -1,0 +1,52 @@
+/* Aspx hits */
+SELECT Count(*) AS Hits FROM '[LOGFILEPATH]' 
+WHERE EXTRACT_EXTENSION(cs-uri-stem) = 'aspx' AND sc-status = 200
+
+/* Aspx average time taken */
+SELECT TOP 10 cs-uri-stem AS Page, AVG(time-taken) AS Duration FROM '[LOGFILEPATH]' 
+WHERE EXTRACT_EXTENSION(cs-uri-stem) = 'aspx' AND sc-status = 200
+GROUP BY Page
+ORDER BY Duration DESC
+
+/* Hits by extension */
+SELECT EXTRACT_EXTENSION(cs-uri-stem) AS Extension, Count(*) AS Hits 
+FROM '[LOGFILEPATH]'
+GROUP BY Extension
+--HAVING Hits > 20
+--ORDER BY Hits DESC
+
+/* Aspx hits by the hour */
+SELECT TO_INT(TO_STRING(time, 'h')) AS Hour, COUNT(*) AS Hits FROM '[LOGFILEPATH]'
+WHERE EXTRACT_EXTENSION(cs-uri-stem) = 'aspx'
+GROUP BY Hour
+ORDER BY Hour 
+
+/* Slow pages taking more than 2 seconds */
+SELECT cs-uri-stem, time-taken FROM '[LOGFILEPATH]'
+WHERE time-taken > 2000 AND sc-status = 200 AND EXTRACT_EXTENSION(cs-uri-stem) = 'aspx'
+ORDER BY time-taken DESC
+
+/* Top 10 images by size */
+SELECT TOP 10 StrCat(Extract_Path(TO_Lowercase(cs-uri-stem)),'/') AS RequestedPath, 
+  Extract_filename(To_Lowercase(cs-uri-stem)) As RequestedFile, Count(*) AS Hits, 
+  Max(time-taken) As MaxTime, Avg(time-taken) As AvgTime, Max(sc-bytes) As BytesSent
+FROM '[LOGFILEPATH]'
+WHERE (Extract_Extension(To_Lowercase(cs-uri-stem)) IN ('gif';'jpg';'png')) 
+  AND (sc-status = 200) GROUP BY To_Lowercase(cs-uri-stem) 
+ORDER BY BytesSent, Hits, MaxTime DESC
+
+/* Average Time per user */
+SELECT TOP 20 cs-username AS UserName, AVG(time-taken) AS AvgTime, Count(*) AS Hits
+FROM '[LOGFILEPATH]' 
+WHERE cs-username IS NOT NULL 
+GROUP BY cs-username 
+ORDER BY AvgTime DESC
+
+/* Top 10 Pages By Size */
+SELECT TOP 10 StrCat(Extract_Path(TO_Lowercase(cs-uri-stem)),'/') AS RequestedPath, 
+  Extract_filename(To_Lowercase(cs-uri-stem)) As RequestedFile, Count(*) AS Hits, 
+  Max(time-taken) As MaxTime, Avg(time-taken) As AvgTime, Max(sc-bytes) As BytesSent 
+FROM '[LOGFILEPATH]' 
+WHERE (Extract_Extension(To_Lowercase(cs-uri-stem)) IN ('aspx')) AND  (sc-status = 200) 
+GROUP BY To_Lowercase(cs-uri-stem) 
+ORDER BY  BytesSent,  Hits,  MaxTime DESC
